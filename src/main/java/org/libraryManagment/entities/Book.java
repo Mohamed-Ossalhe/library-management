@@ -2,8 +2,7 @@ package org.libraryManagment.entities;
 
 import org.libraryManagment.config.DB;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class Book extends DB {
     // properties
@@ -86,10 +85,22 @@ public class Book extends DB {
     }
 
     // display specific book
-    public ResultSet show(int ISBN) {
+    public ResultSet show(String ISBN) {
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN = ?");
-            preparedStatement.setInt(1, ISBN);
+            preparedStatement.setString(1, ISBN);
+            this.book = preparedStatement.executeQuery();
+        }catch (Exception exception) {
+            System.out.println("Statement Exception: " + exception);
+        }
+        return this.book;
+    }
+
+    // search specific book
+    public ResultSet search(String ISBN) {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN LIKE ?");
+            preparedStatement.setString(1, ISBN);
             this.book = preparedStatement.executeQuery();
         }catch (Exception exception) {
             System.out.println("Statement Exception: " + exception);
@@ -116,10 +127,10 @@ public class Book extends DB {
     }
 
     // remove specific book
-    public String destroy(int ISBN) {
+    public String destroy(String ISBN) {
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement("DELETE FROM " + table + " WHERE ISBN = ?");
-            preparedStatement.setInt(1, ISBN);
+            preparedStatement.setString(1, ISBN);
             if (preparedStatement.execute()) {
                 this.message = "Deleted Successfully";
             }
