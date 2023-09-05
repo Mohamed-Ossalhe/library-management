@@ -1,11 +1,20 @@
 package org.libraryManagment.entities;
 
-public class Book {
+import org.libraryManagment.config.DB;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class Book extends DB {
     // properties
     private String title;
     private String author;
     private String ISBN_num;
     private String status;
+    private final String table = "books";
+    private String message = null;
+    private ResultSet books = null;
+    private ResultSet book = null;
 
     // constructor
     public Book() {
@@ -45,5 +54,78 @@ public class Book {
 
     public String getStatus() {
         return status;
+    }
+
+
+    // display list of books
+    public ResultSet index() {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table);
+            this.books = preparedStatement.executeQuery();
+        }catch (Exception exception) {
+            System.out.println("Statement Exception: " + exception);
+        }
+        return this.books;
+    }
+
+    // store new book
+    public String store() {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("INSERT INTO " + table + " (title, author, ISBN, status) VALUES (?, ?, ?, ?)");
+            preparedStatement.setString(1, getTitle());
+            preparedStatement.setString(2, getAuthor());
+            preparedStatement.setString(3, getISBN_num());
+            preparedStatement.setString(4, getStatus());
+            if (preparedStatement.execute()) {
+                this.message = "Created Successfully";
+            }
+        }catch (Exception exception) {
+            System.out.println("Statement Exception: " + exception);
+        }
+        return this.message;
+    }
+
+    // display specific book
+    public ResultSet show(int ISBN) {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN = ?");
+            preparedStatement.setInt(1, ISBN);
+            this.book = preparedStatement.executeQuery();
+        }catch (Exception exception) {
+            System.out.println("Statement Exception: " + exception);
+        }
+        return this.book;
+    }
+
+    // update specific book
+    public String update(int ISBN) {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("UPDATE " + table + " SET title = ?, author = ?, ISBN = ?, status = ? WHERE ISBN = ?");
+            preparedStatement.setString(1, getTitle());
+            preparedStatement.setString(2, getAuthor());
+            preparedStatement.setString(3, getISBN_num());
+            preparedStatement.setString(4, getStatus());
+            preparedStatement.setInt(5, ISBN);
+            if (preparedStatement.execute()) {
+                this.message = "Updated Successfully";
+            }
+        }catch (Exception exception) {
+            System.out.println("Statement Exception: " + exception);
+        }
+        return this.message;
+    }
+
+    // remove specific book
+    public String destroy(int ISBN) {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("DELETE FROM " + table + " WHERE ISBN = ?");
+            preparedStatement.setInt(1, ISBN);
+            if (preparedStatement.execute()) {
+                this.message = "Deleted Successfully";
+            }
+        }catch (Exception exception) {
+            System.out.println("Statement Exception: " + exception);
+        }
+        return this.message;
     }
 }
