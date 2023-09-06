@@ -1,4 +1,4 @@
-package org.libraryManagment.entities;
+package org.libraryManagment.models;
 
 import org.libraryManagment.config.DB;
 
@@ -75,9 +75,8 @@ public class Book extends DB {
             preparedStatement.setString(2, getAuthor());
             preparedStatement.setString(3, getISBN_num());
             preparedStatement.setString(4, getStatus());
-            if (preparedStatement.execute()) {
-                this.message = "Created Successfully";
-            }
+            preparedStatement.execute();
+            this.message = "Created Successfully";
         }catch (Exception exception) {
             System.out.println("Statement Exception: " + exception);
         }
@@ -91,7 +90,7 @@ public class Book extends DB {
             preparedStatement.setString(1, ISBN);
             this.book = preparedStatement.executeQuery();
         }catch (Exception exception) {
-            System.out.println("Statement Exception: " + exception);
+            exception.printStackTrace();
         }
         return this.book;
     }
@@ -103,25 +102,24 @@ public class Book extends DB {
             preparedStatement.setString(1, ISBN);
             this.book = preparedStatement.executeQuery();
         }catch (Exception exception) {
-            System.out.println("Statement Exception: " + exception);
+            exception.printStackTrace();
         }
         return this.book;
     }
 
     // update specific book
-    public String update(int ISBN) {
+    public String update(String ISBN) {
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement("UPDATE " + table + " SET title = ?, author = ?, ISBN = ?, status = ? WHERE ISBN = ?");
             preparedStatement.setString(1, getTitle());
             preparedStatement.setString(2, getAuthor());
             preparedStatement.setString(3, getISBN_num());
             preparedStatement.setString(4, getStatus());
-            preparedStatement.setInt(5, ISBN);
-            if (preparedStatement.execute()) {
-                this.message = "Updated Successfully";
-            }
+            preparedStatement.setString(5, ISBN);
+            preparedStatement.execute();
+            this.message = "Updated Successfully";
         }catch (Exception exception) {
-            System.out.println("Statement Exception: " + exception);
+            exception.printStackTrace();
         }
         return this.message;
     }
@@ -131,11 +129,10 @@ public class Book extends DB {
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement("DELETE FROM " + table + " WHERE ISBN = ?");
             preparedStatement.setString(1, ISBN);
-            if (preparedStatement.execute()) {
-                this.message = "Deleted Successfully";
-            }
+            preparedStatement.execute();
+            this.message = "Deleted Successfully";
         }catch (Exception exception) {
-            System.out.println("Statement Exception: " + exception);
+            exception.printStackTrace();
         }
         return this.message;
     }

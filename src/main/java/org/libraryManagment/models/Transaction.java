@@ -1,4 +1,4 @@
-package org.libraryManagment.entities;
+package org.libraryManagment.models;
 
 public class Transaction {
     // properties

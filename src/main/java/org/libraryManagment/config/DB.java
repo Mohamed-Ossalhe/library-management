@@ -27,7 +27,7 @@ public class DB {
             Class.forName("com.mysql.cj.jdbc.Driver");
             setConnection(DriverManager.getConnection(this.url + this.dbname, this.username, this.password));
         }catch (Exception exception) {
-            System.out.println("Connection Exception: " + exception);
+            exception.printStackTrace();
         }
     }
 
