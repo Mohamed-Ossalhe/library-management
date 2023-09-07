@@ -84,15 +84,15 @@ public class Book extends DB {
     }
 
     // display specific book
-    public ResultSet show(String ISBN) {
+    public ResultSet filter(String status) {
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN = ?");
-            preparedStatement.setString(1, ISBN);
-            this.book = preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE status = ?");
+            preparedStatement.setString(1, status);
+            this.books = preparedStatement.executeQuery();
         }catch (Exception exception) {
             exception.printStackTrace();
         }
-        return this.book;
+        return this.books;
     }
 
     // search specific book

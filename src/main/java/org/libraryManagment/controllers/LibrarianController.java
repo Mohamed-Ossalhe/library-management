@@ -1,13 +1,14 @@
 package org.libraryManagment.controllers;
+import org.libraryManagment.assets.Colors;
 import org.libraryManagment.models.Book;
 
 import java.sql.ResultSet;
 import java.util.Scanner;
 
 
-
 public class LibrarianController {
     private Scanner scanner = new Scanner(System.in);
+    private static final Colors colors = new Colors();
 
     // display all books
     public void index() {
@@ -17,15 +18,23 @@ public class LibrarianController {
                 booksList();
                 System.out.printf("#   1. Add new Book                      %n");
                 System.out.printf("#   2. Show a Book                       %n");
-                System.out.printf("#   3. Edit a Book                       %n");
-                System.out.printf("#   4. Delete a Book                     %n");
+                System.out.printf("#   3. Filter Books                      %n");
+                System.out.printf("#   4. Edit a Book                       %n");
+                System.out.printf("#   5. Delete a Book                     %n");
                 System.out.printf("#   0. Main Menu                         %n");
+                System.out.printf("# > Enter a number: ");
                 choice = this.scanner.nextLine();
                 switch (choice) {
                     case "1" -> addBook();
                     case "2" -> showBook();
-                    case "3" -> updateBook();
-                    case "4" -> System.out.println("delete");
+                    case "3" -> filterBooks();
+                    case "4" -> updateBook();
+                    case "5" -> deleteBook();
+                    default -> {
+                        System.out.printf(colors.YELLOW + "---------------------------------------------%n");
+                        System.out.printf("|            Please Choose a Number         |%n");
+                        System.out.printf("---------------------------------------------%n" + colors.RESET_COLOR);
+                    }
                 }
             }while(!choice.equals("0"));
         }catch (Exception e) {
@@ -36,15 +45,15 @@ public class LibrarianController {
     // Books List
     public void booksList() {
         try {
-            System.out.printf("---------------------------------------------------------------------------------------------%n");
-            System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", "Title", "Author", "ISBN", "Status");
+            System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
+            System.out.printf(colors.BOLD + "# %-20s | %-20s | %-20s | %-20s #%n", "Title", "Author", "ISBN", "Status");
             System.out.printf("---------------------------------------------------------------------------------------------%n");
             Book book = new Book();
             ResultSet resultBooks = book.index();
             while (resultBooks.next()) {
                 System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", resultBooks.getString("title"), resultBooks.getString("author"), resultBooks.getString("ISBN"), resultBooks.getString("status"));
             }
-            System.out.printf("---------------------------------------------------------------------------------------------%n");
+            System.out.printf("---------------------------------------------------------------------------------------------%n" + colors.RESET_COLOR);
             book.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
@@ -61,12 +70,12 @@ public class LibrarianController {
             book.setAuthor(this.scanner.nextLine());
             System.out.printf("# > Enter Book ISBN: ");
             book.setISBN_num(this.scanner.nextLine());
-            System.out.printf("# > Enter Book Status: ");
+            System.out.printf("# > Enter Book Status [available - borrowed]: ");
             book.setStatus(this.scanner.nextLine());
 
-            System.out.printf("---------------------------------------------%n");
+            System.out.printf(colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.store());
-            System.out.printf("---------------------------------------------%n");
+            System.out.printf("---------------------------------------------%n" + colors.RESET_COLOR);
             book.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
@@ -83,15 +92,40 @@ public class LibrarianController {
                 ISBN = this.scanner.nextLine().strip();
                 if (!ISBN.equals("0")) {
                     ResultSet resultBook = book.search(ISBN);
-                    System.out.printf("---------------------------------------------------------------------------------------------%n");
+                    System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
                     System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", "Title", "Author", "ISBN", "Status");
                     System.out.printf("---------------------------------------------------------------------------------------------%n");
                     while (resultBook.next()) {
                         System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", resultBook.getString("title"), resultBook.getString("author"), resultBook.getString("ISBN"), resultBook.getString("status"));
                     }
-                    System.out.printf("---------------------------------------------------------------------------------------------%n");
+                    System.out.printf("---------------------------------------------------------------------------------------------%n"+ colors.RESET_COLOR);
                 }
             }while (!ISBN.equals("0"));
+            book.closeConnection();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // filter books by status
+    public void filterBooks() {
+        try {
+            Book book = new Book();
+            String status = null;
+            do {
+                System.out.printf("# > Enter Book Status [available, borrowed, lost][0 to exit]: ");
+                status = this.scanner.nextLine().strip();
+                if (!status.equals("0")) {
+                    ResultSet resultBook = book.filter(status);
+                    System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
+                    System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", "Title", "Author", "ISBN", "Status");
+                    System.out.printf("---------------------------------------------------------------------------------------------%n");
+                    while (resultBook.next()) {
+                        System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", resultBook.getString("title"), resultBook.getString("author"), resultBook.getString("ISBN"), resultBook.getString("status"));
+                    }
+                    System.out.printf("---------------------------------------------------------------------------------------------%n" + colors.RESET_COLOR);
+                }
+            }while (!status.equals("0"));
             book.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
@@ -113,10 +147,24 @@ public class LibrarianController {
             System.out.printf("# (Edit)> Enter Book Status: ");
             book.setStatus(this.scanner.nextLine());
 
-            System.out.printf("---------------------------------------------%n");
+            System.out.printf(colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.update(ISBN));
-            System.out.printf("---------------------------------------------%n");
+            System.out.printf("---------------------------------------------%n" + colors.RESET_COLOR);
             book.closeConnection();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // delete a book
+    public void deleteBook() {
+        try {
+            Book book = new Book();
+            System.out.printf("# > Enter Book ISBN: ");
+            String ISBN = this.scanner.nextLine();
+            System.out.printf(colors.GREEN + "---------------------------------------------%n");
+            System.out.printf("             %13s          %n", book.destroy(ISBN));
+            System.out.printf("---------------------------------------------%n" + colors.RESET_COLOR);
         }catch (Exception e) {
             e.printStackTrace();
         }
