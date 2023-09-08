@@ -6,6 +6,7 @@ import java.sql.*;
 
 public class Book extends DB {
     // properties
+    private int id;
     private String title;
     private String author;
     private String ISBN_num;
@@ -17,6 +18,15 @@ public class Book extends DB {
 
     // constructor
     public Book() {
+    }
+
+    // id setters & getters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     //  title getters & setters
@@ -107,8 +117,23 @@ public class Book extends DB {
             PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN LIKE ?");
             preparedStatement.setString(1, ISBN);
             this.book = preparedStatement.executeQuery();
+            if (this.book.next()) {
+                setId(this.book.getInt(1));
+            }
         }catch (Exception exception) {
             exception.printStackTrace();
+        }
+        return this.book;
+    }
+
+    // check if book is borrowed
+    public ResultSet checkBorrowed(String ISBN) {
+        try {
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN = ? AND status = 'available'");
+            preparedStatement.setString(1, ISBN);
+            this.book = preparedStatement.executeQuery();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
         return this.book;
     }

@@ -1,5 +1,6 @@
 package org.libraryManagment;
 
+import org.libraryManagment.assets.Colors;
 import org.libraryManagment.controllers.LibrarianController;
 
 import java.util.Scanner;
@@ -12,33 +13,33 @@ public class Main {
     public static void mainMenu() {
         LibrarianController librarianController = new LibrarianController();
         Scanner scanner = new Scanner(System.in);
-        int choice;
+        String choice = null;
         do {
             System.out.printf("---------------------------------------------%n");
             System.out.printf("|          Library Management System        |%n");
             System.out.printf("---------------------------------------------%n");
-            System.out.printf("|                  Main Menu                |%n");
+            System.out.printf("|                   Welcome                 |%n");
             System.out.printf("---------------------------------------------%n");
-            System.out.printf("#      1. Main Menu                         #%n");
-            System.out.printf("#      2. Borrow a Book                     #%n");
-            System.out.printf("#      3. View All Books                    #%n");
-            System.out.printf("#      4. Borrowed Books                    #%n");
-            System.out.printf("#      5. Search for Book                   #%n");
-            System.out.printf("#      6. Statistics                        #%n");
+            System.out.printf("#      1. Login                             #%n");
+            System.out.printf("#      2. Register                          #%n");
             System.out.printf("#      0. Exit                              #%n");
             System.out.printf("---------------------------------------------%n");
             System.out.printf("# Enter Number >>> ");
-            choice = scanner.nextInt();
+            choice = scanner.nextLine();
             switch (choice) {
-                case 1 -> mainMenu();
-                case 2 -> System.out.printf("Hi %n");
-                case 3 -> librarianController.index();
+                case "1" -> librarianController.login();
+                case "2" -> librarianController.register();
+                case "0" -> {
+                    System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
+                    System.out.printf("|                    Exit                   |%n");
+                    System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
+                }
                 default -> {
-                    System.out.printf("---------------------------------------------%n");
-                    System.out.printf("|               You Logged Out!             |%n");
-                    System.out.printf("---------------------------------------------%n");
+                    System.out.printf(Colors.RED + "---------------------------------------------%n");
+                    System.out.printf("|           Please Choose a Number          |%n");
+                    System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
                 }
             }
-        }while (choice != 0);
+        }while (!choice.equals("0"));
     }
 }

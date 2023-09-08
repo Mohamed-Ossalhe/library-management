@@ -4,10 +4,12 @@ import org.libraryManagment.config.DB;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class Emprunt extends DB {
 
     // properties
+    private int id;
     private String name;
     private String cin;
     private String address;
@@ -19,6 +21,15 @@ public class Emprunt extends DB {
 
     // constructor
     public Emprunt() {
+    }
+
+    // id getters & setters
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     // name getters & setters
@@ -63,11 +74,15 @@ public class Emprunt extends DB {
     public String store() {
         String message = null;
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("INSERT INTO " + table + " (name, cin, address) VALUES (?, ?, ?)");
+            String query = "INSERT INTO " + table + " (name, cin, address) VALUES (?, ?, ?);";
+            PreparedStatement preparedStatement = getConnection().prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, getName());
             preparedStatement.setString(2, getCin());
             preparedStatement.setString(3, getAddress());
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
+            ResultSet keys = preparedStatement.getGeneratedKeys();
+            keys.next();
+            setId(keys.getInt(1));
             message = "Created Successfully";
         }catch (Exception e) {
             e.printStackTrace();
@@ -76,15 +91,20 @@ public class Emprunt extends DB {
     }
 
     // display specific emprunt
-    public ResultSet show(String ISBN) {
+    public boolean show(String cin) {
+        boolean message = false;
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN = ?");
-            preparedStatement.setString(1, ISBN);
-            this.emprunt = preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE cin = ?");
+            preparedStatement.setString(1, cin);
+            ResultSet keys = preparedStatement.executeQuery();
+            if (keys.next()) {
+                setId(keys.getInt(1));
+                message = true;
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return this.emprunt;
+        return message;
     }
 
     // delete specific emprunt

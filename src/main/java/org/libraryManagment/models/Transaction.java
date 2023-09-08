@@ -68,7 +68,7 @@ public class Transaction extends DB {
     public ResultSet index() {
         ResultSet transactions = null;
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table);
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT `librarians`.`name`, `emprunts`.`name`, `emprunts`.`cin`, `books`.`title`,`transactions`.`start_date`, `transactions`.`return_date` FROM `transactions` INNER JOIN `librarians` ON `librarians`.`id` = " + table + ".`user_id` INNER JOIN `emprunts` ON `emprunts`.`id` = " + table + ".`emprunt_id` INNER JOIN `books` ON `books`.`id` = " + table + ".`book_id`;");
             transactions = preparedStatement.executeQuery();
         }catch (Exception e) {
             e.printStackTrace();
@@ -86,7 +86,7 @@ public class Transaction extends DB {
             preparedStatement.setInt(3, getBook_id());
             preparedStatement.setString(4, getStart_date());
             preparedStatement.setString(5, getReturn_date());
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
             message = "Created Successfully";
         }catch (Exception e) {
             e.printStackTrace();
@@ -95,13 +95,13 @@ public class Transaction extends DB {
     }
 
     // display a transaction
-    public ResultSet show(int id) {
+    public ResultSet show(int emprunt_id) {
         ResultSet transaction = null;
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE id = ?");
-            preparedStatement.setInt(1, id);
+//            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT `emprunts`.`cin` FROM `transactions` INNER JOIN `emprunts` ON `emprunts`.`id` = `transactions`.`emprunt_id` WHERE `emprunts`.`cin` = ?;");
+            PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE emprunt_id = ?");
+            preparedStatement.setInt(1, emprunt_id);
             transaction = preparedStatement.executeQuery();
-
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,17 +109,13 @@ public class Transaction extends DB {
     }
 
     // update transaction
-    public String update(int id) {
+    public String update(int emprunt_id) {
         String message = null;
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("UPDATE " + table + " SET user_id = ?, emprunt_id = ?, book_id = ?, start_date = ?, return_date = ? WHERE id = ?");
-            preparedStatement.setInt(1, getUser_id());
-            preparedStatement.setInt(2, getEmprunt_id());
-            preparedStatement.setInt(3, getBook_id());
-            preparedStatement.setString(4, getStart_date());
-            preparedStatement.setString(5, getReturn_date());
-            preparedStatement.setInt(6, id);
-            preparedStatement.executeQuery();
+            PreparedStatement preparedStatement = getConnection().prepareStatement("UPDATE " + table + " SET return_date = ? WHERE emprunt_id = ?");
+            preparedStatement.setString(1, getReturn_date());
+            preparedStatement.setInt(2, emprunt_id);
+            preparedStatement.executeUpdate();
             message = "Updated Successfully";
         }catch (Exception e) {
             e.printStackTrace();
