@@ -46,8 +46,8 @@ public class LibrarianController {
     public void booksList() {
         try {
             System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
-            System.out.printf(colors.BOLD + "# %-20s | %-20s | %-20s | %-20s #%n", "Title", "Author", "ISBN", "Status");
-            System.out.printf("---------------------------------------------------------------------------------------------%n");
+            System.out.printf(colors.BOLD + "# %-20s | %-20s | %-20s | %-20s #%n" + colors.RESET_FONT, "Title", "Author", "ISBN", "Status");
+            System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
             Book book = new Book();
             ResultSet resultBooks = book.index();
             while (resultBooks.next()) {
@@ -70,8 +70,6 @@ public class LibrarianController {
             book.setAuthor(this.scanner.nextLine());
             System.out.printf("# > Enter Book ISBN: ");
             book.setISBN_num(this.scanner.nextLine());
-            System.out.printf("# > Enter Book Status [available - borrowed]: ");
-            book.setStatus(this.scanner.nextLine());
 
             System.out.printf(colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.store());
@@ -93,8 +91,8 @@ public class LibrarianController {
                 if (!ISBN.equals("0")) {
                     ResultSet resultBook = book.search(ISBN);
                     System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
-                    System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", "Title", "Author", "ISBN", "Status");
-                    System.out.printf("---------------------------------------------------------------------------------------------%n");
+                    System.out.printf(colors.BOLD + "# %-20s | %-20s | %-20s | %-20s #%n" + colors.RESET_FONT, "Title", "Author", "ISBN", "Status");
+                    System.out.printf(colors.BLUE + "---------------------------------------------------------------------------------------------%n");
                     while (resultBook.next()) {
                         System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", resultBook.getString("title"), resultBook.getString("author"), resultBook.getString("ISBN"), resultBook.getString("status"));
                     }

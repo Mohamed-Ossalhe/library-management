@@ -70,13 +70,19 @@ public class Book extends DB {
     // store new book
     public String store() {
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("INSERT INTO " + table + " (title, author, ISBN, status) VALUES (?, ?, ?, ?)");
-            preparedStatement.setString(1, getTitle());
-            preparedStatement.setString(2, getAuthor());
-            preparedStatement.setString(3, getISBN_num());
-            preparedStatement.setString(4, getStatus());
-            preparedStatement.execute();
-            this.message = "Created Successfully";
+            ResultSet book = this.search(getISBN_num());
+            if (!book.next()) {
+                setStatus("available");
+                PreparedStatement preparedStatement = getConnection().prepareStatement("INSERT INTO " + table + " (title, author, ISBN, status) VALUES (?, ?, ?, ?)");
+                preparedStatement.setString(1, getTitle());
+                preparedStatement.setString(2, getAuthor());
+                preparedStatement.setString(3, getISBN_num());
+                preparedStatement.setString(4, getStatus());
+                preparedStatement.execute();
+                this.message = "Created Successfully";
+            }else {
+                this.message = "ISBN already Exists!";
+            }
         }catch (Exception exception) {
             System.out.println("Statement Exception: " + exception);
         }
@@ -110,12 +116,11 @@ public class Book extends DB {
     // update specific book
     public String update(String ISBN) {
         try {
-            PreparedStatement preparedStatement = getConnection().prepareStatement("UPDATE " + table + " SET title = ?, author = ?, ISBN = ?, status = ? WHERE ISBN = ?");
+            PreparedStatement preparedStatement = getConnection().prepareStatement("UPDATE " + table + " SET title = ?, author = ?, status = ? WHERE ISBN = ?");
             preparedStatement.setString(1, getTitle());
             preparedStatement.setString(2, getAuthor());
-            preparedStatement.setString(3, getISBN_num());
-            preparedStatement.setString(4, getStatus());
-            preparedStatement.setString(5, ISBN);
+            preparedStatement.setString(3, getStatus());
+            preparedStatement.setString(4, ISBN);
             preparedStatement.execute();
             this.message = "Updated Successfully";
         }catch (Exception exception) {
