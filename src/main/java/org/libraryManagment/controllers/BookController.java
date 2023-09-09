@@ -12,7 +12,7 @@ public class BookController {
     // display all books
     public void index() {
         try {
-            String choice;
+            int choice;
             do {
                 booksList();
                 System.out.printf("#   1. Add new Book                      %n");
@@ -22,20 +22,21 @@ public class BookController {
                 System.out.printf("#   5. Delete a Book                     %n");
                 System.out.printf("#   0. Main Menu                         %n");
                 System.out.printf("# > Enter a number: ");
-                choice = this.scanner.nextLine();
+                choice = this.scanner.nextInt();
+                scanner.nextLine();
                 switch (choice) {
-                    case "1" -> addBook();
-                    case "2" -> showBook();
-                    case "3" -> filterBooks();
-                    case "4" -> updateBook();
-                    case "5" -> deleteBook();
+                    case 1 -> addBook();
+                    case 2 -> showBook();
+                    case 3 -> filterBooks();
+                    case 4 -> updateBook();
+                    case 5 -> deleteBook();
                     default -> {
                         System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                         System.out.printf("|            Please Choose a Number         |%n");
                         System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
                     }
                 }
-            }while(!choice.equals("0"));
+            }while(choice != 0);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,11 +65,11 @@ public class BookController {
         try {
             Book book = new Book();
             System.out.printf("# > Enter Book Title: ");
-            book.setTitle(this.scanner.nextLine());
+            book.setTitle(this.scanner.nextLine().strip());
             System.out.printf("# > Enter Book Author: ");
-            book.setAuthor(this.scanner.nextLine());
+            book.setAuthor(this.scanner.nextLine().strip());
             System.out.printf("# > Enter Book ISBN: ");
-            book.setISBN_num(this.scanner.nextLine());
+            book.setISBN_num(this.scanner.nextLine().strip());
 
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.store());
@@ -111,7 +112,7 @@ public class BookController {
             String status = null;
             do {
                 System.out.printf("# > Enter Book Status [available, borrowed, lost][0 to exit]: ");
-                status = this.scanner.nextLine();
+                status = this.scanner.nextLine().strip();
                 if (!status.equals("0")) {
                     ResultSet resultBook = book.filter(status);
                     System.out.printf(Colors.BLUE + "---------------------------------------------------------------------------------------------%n");
@@ -134,15 +135,15 @@ public class BookController {
         try {
             Book book = new Book();
             System.out.printf("# > Enter Book ISBN: ");
-            String ISBN = this.scanner.nextLine();
+            String ISBN = this.scanner.nextLine().strip();
             System.out.printf("# (Edit)> Enter Book Title: ");
-            book.setTitle(this.scanner.nextLine());
+            book.setTitle(this.scanner.nextLine().strip());
             System.out.printf("# (Edit)> Enter Book Author: ");
-            book.setAuthor(this.scanner.nextLine());
+            book.setAuthor(this.scanner.nextLine().strip());
             System.out.printf("# (Edit)> Enter Book ISBN: ");
-            book.setISBN_num(this.scanner.nextLine());
+            book.setISBN_num(this.scanner.nextLine().strip());
             System.out.printf("# (Edit)> Enter Book Status: ");
-            book.setStatus(this.scanner.nextLine());
+            book.setStatus(this.scanner.nextLine().strip());
 
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.update(ISBN));
@@ -158,7 +159,7 @@ public class BookController {
         try {
             Book book = new Book();
             System.out.printf("# > Enter Book ISBN: ");
-            String ISBN = this.scanner.nextLine();
+            String ISBN = this.scanner.nextLine().strip();
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.destroy(ISBN));
             System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);

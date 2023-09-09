@@ -127,7 +127,7 @@ public class Book extends DB {
     }
 
     // check if book is borrowed
-    public ResultSet checkBorrowed(String ISBN) {
+    public ResultSet checkAvailable(String ISBN) {
         try {
             PreparedStatement preparedStatement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE ISBN = ? AND status = 'available'");
             preparedStatement.setString(1, ISBN);

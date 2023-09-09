@@ -13,7 +13,7 @@ public class Main {
     public static void mainMenu() {
         LibrarianController librarianController = new LibrarianController();
         Scanner scanner = new Scanner(System.in);
-        String choice = null;
+        int choice = 0;
         do {
             System.out.printf("---------------------------------------------%n");
             System.out.printf("|          Library Management System        |%n");
@@ -25,11 +25,12 @@ public class Main {
             System.out.printf("#      0. Exit                              #%n");
             System.out.printf("---------------------------------------------%n");
             System.out.printf("# Enter Number >>> ");
-            choice = scanner.nextLine();
+            choice = scanner.nextInt();
+            scanner.nextLine();
             switch (choice) {
-                case "1" -> librarianController.login();
-                case "2" -> librarianController.register();
-                case "0" -> {
+                case 1 -> librarianController.login();
+                case 2 -> librarianController.register();
+                case 0 -> {
                     System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                     System.out.printf("|                    Exit                   |%n");
                     System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
@@ -40,6 +41,6 @@ public class Main {
                     System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
                 }
             }
-        }while (!choice.equals("0"));
+        }while (choice != 0);
     }
 }

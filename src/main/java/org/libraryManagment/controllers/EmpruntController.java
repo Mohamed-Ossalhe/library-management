@@ -18,11 +18,11 @@ public class EmpruntController {
         try {
             Emprunt emprunt = new Emprunt();
             System.out.printf("# > Enter Name: ");
-            emprunt.setName(this.scanner.nextLine());
+            emprunt.setName(this.scanner.nextLine().strip());
             System.out.printf("# > Enter CIN: ");
-            emprunt.setCin(this.scanner.nextLine());
+            emprunt.setCin(this.scanner.nextLine().strip());
             System.out.printf("# > Enter Address: ");
-            emprunt.setAddress(this.scanner.nextLine());
+            emprunt.setAddress(this.scanner.nextLine().strip());
             if (!emprunt.show(emprunt.getCin())) {
                 System.out.printf(Colors.GREEN + "---------------------------------------------%n");
                 System.out.printf("             %13s          %n", emprunt.store());

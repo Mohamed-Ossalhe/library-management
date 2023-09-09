@@ -6,6 +6,10 @@ import org.libraryManagment.models.Book;
 import org.libraryManagment.models.Transaction;
 
 import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -67,25 +71,26 @@ public class TransactionController {
 
     public void index() {
         try {
-            String choice;
+            int choice = 0;
             do {
                 transactionsList();
                 System.out.printf("#   1. Borrow Book                       %n");
                 System.out.printf("#   2. Edit Transaction                  %n");
                 System.out.printf("#   0. Main Menu                         %n");
                 System.out.printf("# > Enter a number: ");
-                choice = this.scanner.nextLine();
+                choice = this.scanner.nextInt();
+                scanner.nextLine();
                 switch (choice) {
-                    case "1" -> addTransaction();
-                    case "2" -> updateTransaction();
-                    case "0" -> System.out.printf("");
+                    case 1 -> addTransaction();
+                    case 2 -> updateTransaction();
+                    case 0 -> System.out.printf("");
                     default -> {
                         System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                         System.out.printf("|            Please Choose a Number         |%n");
                         System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
                     }
                 }
-            }while(!choice.equals("0"));
+            }while(choice != 0);
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,18 +117,29 @@ public class TransactionController {
         try {
             Transaction transaction = new Transaction();
             Book book = new Book();
-            Object b = sessionData.get("user_id");
-            transaction.setUser_id((int)b);
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+
+            Object user_id = sessionData.get("user_id");
+            transaction.setUser_id((int)user_id);
             transaction.setEmprunt_id(this.empruntController.addEmprunt());
+
             System.out.printf("# > Enter Book ISBN: ");
-            book.setISBN_num(this.scanner.nextLine());
+            book.setISBN_num(this.scanner.nextLine().strip());
             book.search(book.getISBN_num());
             transaction.setBook_id(book.getId());
-            System.out.printf("# > Enter Borrow Date: ");
-            transaction.setStart_date(this.scanner.nextLine());
-            System.out.printf("# > Enter Return Date: ");
-            transaction.setReturn_date(this.scanner.nextLine());
-            if (!book.checkBorrowed(book.getISBN_num()).next()) {
+
+            // System.out.printf("# > Enter Borrow Date: ");
+            transaction.setStart_date(dateFormat.format(new Date()));
+
+            System.out.printf("# > Enter Days: ");
+            calendar.add(Calendar.DATE, this.scanner.nextInt());
+            this.scanner.nextLine();
+            transaction.setReturn_date(dateFormat.format(calendar.getTime()));
+
+            if (book.checkAvailable(book.getISBN_num()).next()) {
                 System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                 System.out.printf("             %13s          %n", "Book not available!");
                 System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
@@ -152,9 +168,19 @@ public class TransactionController {
     public void updateTransaction() {
         try {
             Transaction transaction = new Transaction();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar calendar = Calendar.getInstance();
+
+            calendar.setTime(new Date());
             transaction.setEmprunt_id(this.empruntController.addEmprunt());
-            System.out.printf("# > Enter updated Return date: ");
-            transaction.setReturn_date(this.scanner.nextLine());
+
+            System.out.printf("# > Enter More Days: ");
+            calendar.add(Calendar.DATE, this.scanner.nextInt());
+            this.scanner.nextLine();
+            transaction.setReturn_date(dateFormat.format(calendar.getTime()));
+
+            // transaction.setReturn_date(this.scanner.nextLine());
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", transaction.update(transaction.getEmprunt_id()));
             System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);

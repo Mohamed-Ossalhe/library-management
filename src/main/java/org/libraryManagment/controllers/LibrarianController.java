@@ -14,8 +14,9 @@ public class LibrarianController {
     public void index() {
         BookController bookController = new BookController();
         TransactionController transactionController = new TransactionController();
+        StatisticsController statisticsController = new StatisticsController();
         Scanner scanner = new Scanner(System.in);
-        String choice = null;
+        int choice = 0;
         do {
             System.out.printf("---------------------------------------------%n");
             System.out.printf("|          Library Management System        |%n");
@@ -25,18 +26,19 @@ public class LibrarianController {
             System.out.printf("#      1. Main Menu                         #%n");
             System.out.printf("#      2. Transactions                      #%n");
             System.out.printf("#      3. View All Books                    #%n");
-            System.out.printf("#      4. Borrowed Books                    #%n");
-            System.out.printf("#      5. Search for Book                   #%n");
-            System.out.printf("#      6. Statistics                        #%n");
+            System.out.printf("#      4. Search for Book                   #%n");
+            System.out.printf("#      5. Statistics                        #%n");
             System.out.printf("#      0. Exit                              #%n");
             System.out.printf("---------------------------------------------%n");
             System.out.printf("# Enter Number >>> ");
-            choice = scanner.nextLine();
+            choice = scanner.nextInt();
+            scanner.nextLine();
             switch (choice) {
-                case "1" -> index();
-                case "2" -> transactionController.index();
-                case "3" -> bookController.index();
-                case "0" -> {
+                case 1 -> index();
+                case 2 -> transactionController.index();
+                case 3 -> bookController.index();
+                case 5 -> statisticsController.Statistics();
+                case 0 -> {
                     System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                     System.out.printf("|               You Logged Out!             |%n");
                     System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
@@ -47,17 +49,17 @@ public class LibrarianController {
                     System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
                 }
             }
-        }while (!choice.equals("0"));
+        }while (choice != 0);
     }
     public void register() {
         try {
             Librarian librarian = new Librarian();
             System.out.printf("# > Enter Name: ");
-            librarian.setName(this.scanner.nextLine());
+            librarian.setName(this.scanner.nextLine().strip());
             System.out.printf("# > Enter CIN: ");
-            librarian.setCin(this.scanner.nextLine());
+            librarian.setCin(this.scanner.nextLine().strip());
             System.out.printf("# > Enter Address: ");
-            librarian.setAddress(this.scanner.nextLine());
+            librarian.setAddress(this.scanner.nextLine().strip());
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", librarian.store());
             System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
@@ -70,9 +72,9 @@ public class LibrarianController {
         try {
             Librarian librarian = new Librarian();
             System.out.printf("# > username: ");
-            librarian.setName(this.scanner.nextLine());
+            librarian.setName(this.scanner.nextLine().strip());
             System.out.printf("# > password: ");
-            librarian.setPassword(this.scanner.nextLine());
+            librarian.setPassword(this.scanner.nextLine().strip());
             System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", librarian.show());
             System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
