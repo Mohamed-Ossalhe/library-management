@@ -70,6 +70,7 @@ public class BookController {
             book.setAuthor(this.scanner.nextLine().strip());
             System.out.printf("# > Enter Book ISBN: ");
             book.setISBN_num(this.scanner.nextLine().strip());
+            book.setStatus("available");
 
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.store());
@@ -81,28 +82,29 @@ public class BookController {
     }
 
     // display book
-    public void showBook() {
+    public Book showBook() {
+        Book book = new Book();
         try {
-            Book book = new Book();
-            String ISBN = null;
-            do {
-                System.out.printf("# > Enter Book ISBN [0 to exit]: ");
-                ISBN = this.scanner.nextLine().strip();
-                if (!ISBN.equals("0")) {
-                    ResultSet resultBook = book.search(ISBN);
-                    System.out.printf(Colors.BLUE + "---------------------------------------------------------------------------------------------%n");
-                    System.out.printf(Colors.BOLD + "# %-20s | %-20s | %-20s | %-20s #%n" + Colors.RESET_FONT, "Title", "Author", "ISBN", "Status");
-                    System.out.printf(Colors.BLUE + "---------------------------------------------------------------------------------------------%n");
-                    while (resultBook.next()) {
-                        System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", resultBook.getString("title"), resultBook.getString("author"), resultBook.getString("ISBN"), resultBook.getString("status"));
-                    }
-                    System.out.printf("---------------------------------------------------------------------------------------------%n"+ Colors.RESET_COLOR);
-                }
-            }while (!ISBN.equals("0"));
-            book.closeConnection();
+            System.out.printf("# > Enter Book ISBN: ");
+            String ISBN = this.scanner.nextLine();
+            ResultSet resultBook = book.search(ISBN);
+            // set book
+            book.setTitle(resultBook.getString("title"));
+            book.setAuthor(resultBook.getString("author"));
+            book.setISBN_num(resultBook.getString("ISBN"));
+            book.setStatus(resultBook.getString("status"));
+            System.out.printf(Colors.BLUE + "---------------------------------------------------------------------------------------------%n");
+            System.out.printf(Colors.BOLD + "# %-20s | %-20s | %-20s | %-20s #%n" + Colors.RESET_FONT, "Title", "Author", "ISBN", "Status");
+            System.out.printf(Colors.BLUE + "---------------------------------------------------------------------------------------------%n");
+//            while (resultBook.next()) {
+                System.out.printf("# %-20s | %-20s | %-20s | %-20s #%n", resultBook.getString("title"), resultBook.getString("author"), resultBook.getString("ISBN"), resultBook.getString("status"));
+//            }
+            System.out.printf("---------------------------------------------------------------------------------------------%n"+ Colors.RESET_COLOR);
+//            book.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
         }
+        return book;
     }
 
     // filter books by status
@@ -163,6 +165,7 @@ public class BookController {
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", book.destroy(ISBN));
             System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
+            book.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
         }

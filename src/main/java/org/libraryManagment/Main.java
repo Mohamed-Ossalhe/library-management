@@ -34,6 +34,7 @@ public class Main {
                     System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                     System.out.printf("|                    Exit                   |%n");
                     System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
+                    System.exit(0);
                 }
                 default -> {
                     System.out.printf(Colors.RED + "---------------------------------------------%n");

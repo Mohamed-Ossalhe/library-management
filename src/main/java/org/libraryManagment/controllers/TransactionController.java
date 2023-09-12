@@ -8,10 +8,7 @@ import org.libraryManagment.models.Transaction;
 import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class TransactionController {
@@ -19,6 +16,7 @@ public class TransactionController {
     private Map<String, Object> sessionData = SessionData.getInstance();
     private final EmpruntController empruntController = new EmpruntController();
     private final static String table = "transactions";
+
 
     private int user_id;
     private int emprunt_id;
@@ -115,31 +113,29 @@ public class TransactionController {
 
     public void addTransaction() {
         try {
+            BookController bookController = new BookController();
             Transaction transaction = new Transaction();
-            Book book = new Book();
-
+            // config date
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
-
-            Object user_id = sessionData.get("user_id");
-            transaction.setUser_id((int)user_id);
+            // set transaction info
+            transaction.setUser_id(getLibrarianId());
             transaction.setEmprunt_id(this.empruntController.addEmprunt());
 
-            System.out.printf("# > Enter Book ISBN: ");
-            book.setISBN_num(this.scanner.nextLine().strip());
-            book.search(book.getISBN_num());
+//            System.out.printf("# > Enter Book ISBN: ");
+            Book book = bookController.showBook();
             transaction.setBook_id(book.getId());
 
-            // System.out.printf("# > Enter Borrow Date: ");
-            transaction.setStart_date(dateFormat.format(new Date()));
-
-            System.out.printf("# > Enter Days: ");
-            calendar.add(Calendar.DATE, this.scanner.nextInt());
-            this.scanner.nextLine();
-            transaction.setReturn_date(dateFormat.format(calendar.getTime()));
-
-            if (book.checkAvailable(book.getISBN_num()).next()) {
+//            // System.out.printf("# > Enter Borrow Date: ");
+            transaction.setStart_date(getTodayDate(dateFormat));
+//
+//            System.out.printf("# > Enter Days: ");
+//            calendar.add(Calendar.DATE, this.scanner.nextInt());
+//            this.scanner.nextLine();
+            transaction.setReturn_date(getReturnDate(calendar, dateFormat, 15));
+//
+            if (!book.getStatus().equals("available")) {
                 System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                 System.out.printf("             %13s          %n", "Book not available!");
                 System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
@@ -147,11 +143,14 @@ public class TransactionController {
                 System.out.printf(Colors.GREEN + "---------------------------------------------%n");
                 System.out.printf("             %13s          %n", transaction.store());
                 System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
+                book.setStatus("borrowed");
+                book.update(book.getISBN_num());
             }else {
                 System.out.printf(Colors.YELLOW + "---------------------------------------------%n");
                 System.out.printf("             %13s          %n", "Already Exists!");
                 System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
             }
+            transaction.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -184,6 +183,8 @@ public class TransactionController {
             System.out.printf(Colors.GREEN + "---------------------------------------------%n");
             System.out.printf("             %13s          %n", transaction.update(transaction.getEmprunt_id()));
             System.out.printf("---------------------------------------------%n" + Colors.RESET_COLOR);
+
+            transaction.closeConnection();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -195,5 +196,22 @@ public class TransactionController {
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // return today's date (get start date)
+    public String getTodayDate(DateFormat dateFormat) {
+        return dateFormat.format(new Date());
+    }
+
+    // return the return book date
+    public String getReturnDate(Calendar calendar, DateFormat dateFormat, int days) {
+        calendar.add(Calendar.DATE, days);
+        return dateFormat.format(calendar.getTime());
+    }
+
+    // return user id
+    public int getLibrarianId() {
+        Object user = this.sessionData.get("user_id");
+        return (int)user;
     }
 }
